@@ -1,5 +1,22 @@
 
+
 import streamlit as st
+import os
+
+# NanumGothic-Regular.ttf 한글 폰트 적용
+font_path = os.path.join(os.path.dirname(__file__), '../fonts/NanumGothic-Regular.ttf')
+font_css = f"""
+<style>
+@font-face {{
+	font-family: 'NanumGothic';
+	src: url('{font_path}');
+}}
+html, body, [class*='css']  {{
+	font-family: 'NanumGothic', sans-serif !important;
+}}
+</style>
+"""
+st.markdown(font_css, unsafe_allow_html=True)
 
 st.title("나의 꿈을 돌아보기")
 st.markdown("""
