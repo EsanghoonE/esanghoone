@@ -2,7 +2,7 @@
 
 import streamlit as st
 import os
-
+ 
 # NanumGothic-Regular.ttf 한글 폰트 적용
 font_path = os.path.join(os.path.dirname(__file__), '../fonts/NanumGothic-Regular.ttf')
 font_css = f"""
