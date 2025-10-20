@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import random 
 
-# --- 1. 데이터 정의 (JOB_ROLES에서 'image' 항목 제거) ---
+# --- 데이터 정의 (유지) ---
 
 CAR_MODELS_EXTENDED = {
     '전기차': {
@@ -42,7 +42,6 @@ DRIVING_FACTORS = {
     'F': '차량의 조립/정비 용이성'
 }
 
-# 🚨 이미지 항목 제거 완료
 JOB_ROLES = {
     '자동차 정비': {"desc": "차량 기계, 전기/전자 시스템 고장 진단 및 수리. (미래 EV 전문 정비 포함)", "need": "분석력, 꼼꼼함, 손기술"},
     '자동차 차체수리': {"desc": "사고 차량의 외형 복원, 판금 작업 및 차체 구조 안전성 확보.", "need": "정교함, 구조 이해력, 인내심"},
@@ -52,7 +51,6 @@ JOB_ROLES = {
     '자동차 딜러 (영업)': {"desc": "고객에게 차량을 판매하고 계약, 출고, 사후 관리를 담당. (가치와 매력을 전달)", "need": "설득력, 적극성, 자동차에 대한 열정"}
 }
 
-# 직무 추천 가중치 테이블
 JOB_WEIGHTS = {
     '자동차 정비': {'A': 1, 'B': 0, 'C': 1, 'D': 1, 'E': 3, 'F': 3},
     '자동차 차체수리': {'A': 0, 'B': 2, 'C': 0, 'D': 0, 'E': 3, 'F': 1},
@@ -64,7 +62,6 @@ JOB_WEIGHTS = {
 
 COLOR_OPTIONS = ['화이트', '블랙', '실버', '블루', '레드', '커스텀 색상']
 
-# 3단계: 직무별 로드맵 데이터
 ROADMAP_DATA = {
     '공통_고1': {
         '내용': ['보통교과(국/영/수) 성실 학습', '자동차 정비 기능사 또는 보수 도장 기능사 필기 준비', '전공 동아리(자동차 익스플로러) 가입'],
@@ -100,32 +97,30 @@ ROADMAP_DATA = {
 # --- 2. Streamlit 앱 페이지 구성 함수 ---
 
 def apply_custom_styles():
-    """앱 전체에 사용자 친화적인 폰트 및 스타일 적용 (크기 조정)"""
+    """앱 전체에 사용자 친화적인 폰트 및 스타일 적용 (폰트 깨짐 방지를 위해 Nanum Font 제거)"""
     st.markdown(
         """
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
-        
-        /* 전체 폰트 크기 및 Nanum Pen Script 적용 */
+        /* 폰트 깨짐 방지를 위해 폰트 설정을 시스템 기본 폰트로 유지하고, 크기만 조정 */
         html, body, [class*="st-emotion"] {
-            font-family: 'Nanum Pen Script', cursive;
-            font-size: 1.0em; /* 글씨 크기 약간 작게 조정 */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            font-size: 0.95em; /* 전체 글씨 크기를 작게 하여 가독성 및 깔끔함 확보 */
         }
         
         /* 제목 글꼴 크기 조정 */
-        h1 { font-size: 2.5em; }
-        h2 { font-size: 2.0em; }
-        h3 { font-size: 1.6em; }
-        h4, h5, h6 { font-size: 1.3em; }
+        h1 { font-size: 2.2em; }
+        h2 { font-size: 1.8em; }
+        h3 { font-size: 1.5em; }
+        h4, h5, h6 { font-size: 1.2em; }
 
-        /* Streamlit 버튼 스타일 (친근하고 눈에 띄게) */
+        /* Streamlit 버튼 스타일 (깔끔함 유지) */
         .stButton>button {
             border-radius: 15px;
-            border: 2px solid #FF5733; 
-            color: #FF5733;
-            background-color: #ffe4cc; 
+            border: 1px solid #0078D4; 
+            color: #0078D4;
+            background-color: #e6f7ff; 
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1.0em;
             padding: 5px 10px;
         }
         
@@ -140,7 +135,7 @@ def apply_custom_styles():
             background-color: #f7f7f7;
             border-radius: 8px;
             padding: 10px;
-            font-size: 1.2em !important;
+            font-size: 1.1em !important;
         }
         
         </style>
@@ -319,7 +314,7 @@ def stage_2_job_matching():
         st.rerun()
 
 def stage_3_roadmap():
-    """3단계: 3년 학습 로드맵 설계 및 시각화"""
+    """3단계: 3년 학습 로드맵 설계 및 최종 시각화"""
     st.header("🗓️ 3단계: 나만의 3년 학습 로드맵 만들기")
     
     selected_job = st.session_state.selected_job
@@ -330,77 +325,54 @@ def stage_3_roadmap():
         st.info(f"선택 직무: **{selected_job}** | 목표: 현장 전문가 및 미래 커리어 설계")
         st.markdown("---")
         
-        # --- 1. 고교 3년 공통 로드맵 (시각화) ---
-        st.markdown("### 1. 🥇 고등학교 3년 핵심 공통 목표 (기초 다지기)")
-        
-        # DataFrame으로 로드맵 표 생성 (시각화 강조)
-        df_common = pd.DataFrame({
-            '학년': ['고1', '고2', '고3'],
-            '학습 목표': [
+        # -----------------------------------------------------------
+        # 최종 로드맵 요약 (한눈에 보기)
+        # -----------------------------------------------------------
+        st.markdown("### 🏆 최종 로드맵 요약 (고교 3년 + 졸업 후 경로)")
+
+        # 1. 고교 3년 공통 및 심화 목표
+        df_summary = pd.DataFrame({
+            '학년': ['고1 (기초)', '고2 (심화)', '고3 (실행)'],
+            '핵심 목표': [
                 ROADMAP_DATA['공통_고1']['목표'],
                 '선택 직무 심화 및 핵심 자격증 취득',
                 '최종 진로 실행 및 포트폴리오 완성'
             ],
-            '주요 활동 (공통)': [
-                f"**필수 자격증 도전** ({'정비' if selected_job != '자동차 도장' else '도장'} 기능사 필기)",
-                '자동차 정비 기능사/보수 도장 기능사 합격 후 심화 실습',
-                '취업/진학/공기업 등 최종 경로 준비 집중'
+            f'주요 활동 ({selected_job})': [
+                f"**필수 자격증 도전** ({'정비' if selected_job != '자동차 도장' else '도장'} 기능사 필기) 및 기초교과 관리",
+                f"**방과 후 심화 과정:** {', '.join(ROADMAP_DATA[selected_job].get('고2_심화', []))}",
+                f"**최종 목표 준비:** {ROADMAP_DATA[selected_job].get('고3_목표', '')}"
             ]
         }).set_index('학년')
-        st.table(df_common)
+        st.table(df_summary)
         
         st.markdown("---")
 
-        # --- 2. 직무별 심화 학습 (시각화) ---
-        st.markdown(f"### 2. 🚀 **[{selected_job}]** 직무 달성을 위한 심화/실무 계획")
-        job_roadmap = ROADMAP_DATA.get(selected_job, {})
+        # 2. 고3 이후 최종 진로 경로 (선택의 기회) - 이미지와 동일한 Expander 목록 유지
+        st.markdown("### 🎯 고3 이후 최종 진로 경로 (선택의 기회)")
         
-        col_g2, col_g3 = st.columns(2)
-        
-        with col_g2:
-            st.markdown("#### 💎 고2 (심화 및 역량 강화)")
-            st.markdown("##### **[방과 후/동아리 추천]**")
-            for item in job_roadmap.get('고2_심화', ['정보 없음']):
-                st.code(f"✅ {item}", language="markdown")
-
-        with col_g3:
-            st.markdown("#### 📘 고3 (최종 목표 및 포트폴리오)")
-            st.markdown("##### **[핵심 목표]**")
-            st.code(f"🎯 {job_roadmap.get('고3_목표', '정보 없음')}", language="markdown")
-            st.markdown("##### **[포트폴리오]**")
-            if selected_job in ['자동차 정비', '자동차 차체수리', '자동차 도장']:
-                st.write("- 관련 **기능사 자격증 최종 취득**")
-                st.write("- **현장 실습/취업**을 위한 실무 보고서")
-            elif selected_job == '자동차 튜닝':
-                st.write("- **튜닝 프로젝트** 설계 및 제작 결과물")
-            else:
-                st.write("- **상담/프리젠테이션** 영상 및 OA 능력 인증")
-
-        st.markdown("---")
-
-        # --- 3. 최종 진로 경로 옵션 (시각화) ---
-        st.markdown("### 3. 🎯 고3 이후 최종 진로 경로 (선택의 기회)")
-        
+        # 아우스빌둥
         with st.expander("💼 아우스빌둥 (일학습 병행) - 메인 취업처"):
             st.markdown("##### **[벤츠, BMW, 아우디 등 수입차 브랜드 취업]**")
-            st.write(f"- **전형:** 5월 필기 $\rightarrow$ 6월 면접 $\rightarrow$ 9월부터 현장실습")
-            st.write(f"- **혜택:** 대학 등록금 지원, 매월 **100만원 지원금** + 신입 정직원 급여 지급.")
+            st.write("- **혜택:** 대학 등록금 지원, 매월 **100만원 지원금** + 신입 정직원 급여 지급.")
             st.write("- **경로:** 2년제 대학(1학기) $\rightarrow$ 군 복무(18개월) $\rightarrow$ 복학 $\rightarrow$ 회사 복귀(3년 트레이닝) $\rightarrow$ 정직원")
         
+        # 일반 취업/재직자 전형
         with st.expander("🏭 일반 취업 후 재직자 전형 (대학 진학 목표)"):
             st.markdown("##### **[우수 협력/선배 운영 업체 취업]**")
             st.write("- **경로:** 고3 10월 이후 3개월 현장실습 $\rightarrow$ 1월 근로계약 체결 및 취업.")
-            st.write("- **혜택:** **3년 근속** 시 **특성화고 재직자 전형**을 통해 서울 시내 대학 진학 가능. (경쟁률 낮아 수월한 진학)")
+            st.write("- **혜택:** **3년 근속** 시 **특성화고 재직자 전형**을 통해 서울 시내 대학 진학 가능.")
         
+        # 공기업/공무원
         with st.expander("🏢 공기업 및 공무원"):
             st.markdown("##### **[한국철도공사, 서울교통공사, 서울시 공무원 등]**")
             st.write("- **요건:** 고2까지 보통교과 평균 3.5 이상, 전문교과 50% 이상 A등급.")
             st.write("- **전형:** 학교장 추천 (인원 제한 있음) $\rightarrow$ **NCS 시험** 및 면접.")
         
+        # 대학 진학 및 기타
         with st.expander("🎓 기타 진학 경로"):
             st.write("- **국내 대학 연계:** 여주대, 두원공과대 등 수시/수능 전형.")
             st.write("- **연계 사업:** P-TECH (폴리텍 일학습 병행), 계약학부.")
-            st.write("- **학교기업:** 용공모터스 인턴십 및 취업 (1~2명 소수)." )
 
         st.balloons()
         st.success(f"**{student_name} 학생**, 이 로드맵이 당신의 성공적인 3년을 위한 지침서가 될 것입니다! 🚀")
