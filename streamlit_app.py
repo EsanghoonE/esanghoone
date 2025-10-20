@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import random 
 
-# --- 데이터 정의 (수정된 JOB_ROLES) ---
+# --- 데이터 정의 (오류 수정 완료: JOB_ROLES) ---
 
 CAR_MODELS_EXTENDED = {
     '전기차': {
@@ -42,7 +42,7 @@ DRIVING_FACTORS = {
     'F': '차량의 조립/정비 용이성'
 }
 
-# 🚨 오류 수정 완료: 모든 'image' 값의 문자열 끝에 닫는 따옴표(")가 추가되었습니다.
+# 🚨 오류 수정 완료: 모든 "image" 문자열을 한 줄에 닫았습니다.
 JOB_ROLES = {
     '자동차 정비': {"desc": "차량 기계, 전기/전자 시스템 고장 진단 및 수리. (미래 EV 전문 정비 포함)", "image": "", "need": "분석력, 꼼꼼함, 손기술"},
     '자동차 차체수리': {"desc": "사고 차량의 외형 복원, 판금 작업 및 차체 구조 안전성 확보.", "image": "", "need": "정교함, 구조 이해력, 인내심"},
@@ -170,7 +170,7 @@ def calculate_job_scores(factors):
     """1단계 선호 동인을 기반으로 직무 추천 점수 계산"""
     scores = {job: 0 for job in JOB_WEIGHTS}
     
-    factor_keys = factors if isinstance(factors, list) else [] # factors가 리스트가 아닐 경우 대비
+    factor_keys = factors if isinstance(factors, list) else [] 
     
     for factor in factor_keys:
         for job, weights in JOB_WEIGHTS.items():
