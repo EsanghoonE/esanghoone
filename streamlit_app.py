@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import random 
 
-# --- 데이터 정의 (유지) ---
+# --- 데이터 정의 (수정된 JOB_ROLES) ---
 
 CAR_MODELS_EXTENDED = {
     '전기차': {
@@ -42,6 +42,7 @@ DRIVING_FACTORS = {
     'F': '차량의 조립/정비 용이성'
 }
 
+# 🚨 오류 수정 완료: 모든 'image' 값의 문자열 끝에 닫는 따옴표(")가 추가되었습니다.
 JOB_ROLES = {
     '자동차 정비': {"desc": "차량 기계, 전기/전자 시스템 고장 진단 및 수리. (미래 EV 전문 정비 포함)", "image": "", "need": "분석력, 꼼꼼함, 손기술"},
     '자동차 차체수리': {"desc": "사고 차량의 외형 복원, 판금 작업 및 차체 구조 안전성 확보.", "image": "", "need": "정교함, 구조 이해력, 인내심"},
@@ -54,7 +55,7 @@ JOB_ROLES = {
     '자동차 딜러 (영업)': {"desc": "고객에게 차량을 판매하고 계약, 출고, 사후 관리를 담당. (가치와 매력을 전달)", "image": "", "need": "설득력, 적극성, 자동차에 대한 열정"}
 }
 
-# 직무 추천 가중치 테이블 (1단계 동인 -> 2단계 직무 점수화)
+# 직무 추천 가중치 테이블
 JOB_WEIGHTS = {
     '자동차 정비': {'A': 1, 'B': 0, 'C': 1, 'D': 1, 'E': 3, 'F': 3},
     '자동차 차체수리': {'A': 0, 'B': 2, 'C': 0, 'D': 0, 'E': 3, 'F': 1},
@@ -63,7 +64,40 @@ JOB_WEIGHTS = {
     '서비스 어드바이저 (SA)': {'A': 1, 'B': 1, 'C': 3, 'D': 2, 'E': 1, 'F': 0},
     '자동차 딜러 (영업)': {'A': 3, 'B': 2, 'C': 2, 'D': 1, 'E': 0, 'F': 0}
 }
-# (나머지 ROADMAP_DATA, COLOR_OPTIONS 유지)
+
+COLOR_OPTIONS = ['화이트', '블랙', '실버', '블루', '레드', '커스텀 색상']
+
+# 3단계: 직무별 로드맵 데이터
+ROADMAP_DATA = {
+    '공통_고1': {
+        '내용': ['보통교과(국/영/수) 성실 학습', '자동차 정비 기능사 또는 보수 도장 기능사 필기 준비', '전공 동아리(자동차 익스플로러) 가입'],
+        '목표': '기초 학력 확보 및 기본 자격증 도전'
+    },
+    '자동차 정비': {
+        '고2_심화': ['EV 정비 기초 (전기/배터리)', '엔진/섀시 정밀 진단 실습', '특수용접 기능사 또는 피복아크용접 기능사 준비'],
+        '고3_목표': '자동차 정비 기능사 합격, 취업맞춤반(현대/기아 등), 아우스빌둥(벤츠/BMW/포르쉐 등) 준비'
+    },
+    '자동차 차체수리': {
+        '고2_심화': ['차체 구조 복원 심화 실습', '판금/용접 집중 훈련', '차체수리 기능사 및 용접 기능사 준비'],
+        '고3_목표': '차체수리 기능사 합격, 아우스빌둥(판금 직무), 일반 우수 협력업체 취업 준비'
+    },
+    '자동차 도장': {
+        '고2_심화': ['색상 조색 심화 교육', '스프레이 건/표면 처리 기술 집중 훈련'],
+        '고3_목표': '보수 도장 기능사 합격, 아우스빌둥(도장 직무), 일반 우수 협력업체 취업 준비'
+    },
+    '자동차 튜닝': {
+        '고2_심화': ['랩핑/내장재 튜닝 실습', '기능 튜닝 (서스펜션/브레이크) 실습', 'CAD/3D 프린팅 기초'],
+        '고3_목표': '실무 프로젝트 포트폴리오 완성, 우수 튜닝샵 취업'
+    },
+    '서비스 어드바이저 (SA)': {
+        '고2_심화': ['고객 응대/상담 화법 훈련', '자동차 보험/법규 이해 및 진단 보고서 작성'],
+        '고3_목표': 'OA 자격증, 아우스빌둥(SA 직무), 딜러사 SA 취업 준비'
+    },
+    '자동차 딜러 (영업)': {
+        '고2_심화': ['마케팅/세일즈 기초', '신차 프리젠테이션 훈련', '다양한 브랜드 스터디'],
+        '고3_목표': '운전면허 필수, 우수 딜러사 취업 준비, 특성화고 재직자 전형 대비'
+    }
+}
 
 
 # --- 2. Streamlit 앱 페이지 구성 함수 ---
@@ -136,7 +170,9 @@ def calculate_job_scores(factors):
     """1단계 선호 동인을 기반으로 직무 추천 점수 계산"""
     scores = {job: 0 for job in JOB_WEIGHTS}
     
-    for factor in factors:
+    factor_keys = factors if isinstance(factors, list) else [] # factors가 리스트가 아닐 경우 대비
+    
+    for factor in factor_keys:
         for job, weights in JOB_WEIGHTS.items():
             scores[job] += weights.get(factor, 0)
             
@@ -145,12 +181,13 @@ def calculate_job_scores(factors):
     return sorted_jobs
 
 def stage_1_dreamcar():
-    # ... (1단계 코드 유지) ...
+    """1단계: 드림카 비전보드 및 선호 동인 분석"""
     st.header("✨ 1단계: 나의 드림카 비전보드 만들기")
     
     st.session_state.student_name = st.text_input("당신의 이름을 입력해주세요.", value=st.session_state.student_name)
     st.markdown("---")
 
+    # 1-1. 동력원 선택
     st.markdown("##### 1. 당신이 꿈꾸는 자동차의 핵심 동력원을 선택해주세요.")
     st.session_state.car_data['engine'] = st.radio(
         "동력원 선택", list(CAR_MODELS_EXTENDED.keys()), index=None, horizontal=True, label_visibility="collapsed"
@@ -159,6 +196,7 @@ def stage_1_dreamcar():
     if st.session_state.car_data['engine']:
         engine_type = st.session_state.car_data['engine']
         
+        # 1-2. 브랜드 및 모델 선택
         st.markdown(f"##### 2. {engine_type} 분야에서 가장 관심 있는 브랜드와 모델을 선택해주세요.")
         
         brands = list(CAR_MODELS_EXTENDED.get(engine_type, {}).keys())
@@ -174,6 +212,7 @@ def stage_1_dreamcar():
             with model_col:
                 st.session_state.car_data['model'] = st.selectbox("모델 선택 (다양한 차종 포함)", models, index=None, placeholder="모델 선택", key="model_select")
 
+            # 1-2-1. 색상 선택
             if st.session_state.car_data['model']:
                 st.markdown("##### 3. 나의 드림카 색상을 선택해주세요.")
                 st.session_state.final_color = st.selectbox(
@@ -182,9 +221,11 @@ def stage_1_dreamcar():
                 
                 model = st.session_state.car_data['model']
                 
+                # 1-3. 드림카 비전보드 최종 화면 (시각화 강조)
                 st.markdown("---")
                 st.markdown("### 🏆 나의 드림카 비전보드 완성!")
                 
+                # 이미지 플레이스홀더 영역
                 st.markdown(f"""
                 <div style="background-color: #f0f2f6; height: 300px; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 5px solid {st.session_state.final_color.lower() if st.session_state.final_color else '#ccc'};">
                     <h3 style="color:#333;">선택된 드림카 이미지 영역</h3>
@@ -193,12 +234,14 @@ def stage_1_dreamcar():
                 </div>
                 """, unsafe_allow_html=True)
                 
+                # 1-4. 나의 드림카 코멘트
                 st.session_state.car_data['comment'] = st.text_area(
                     "나의 드림카 코멘트 (이 차에 대한 나의 꿈이나 생각)", 
                     placeholder="예: '이 차를 언젠가 직접 튜닝해보고 싶어요!'",
                     key="comment_area"
                 )
                 
+                # 1-5. 선호 동인 분석 (2단계 직무 매칭의 기초 자료)
                 st.markdown("---")
                 st.markdown("### 🔍 4. 이 차를 선택한 가장 결정적인 이유는 무엇인가요? (최대 3가지)")
                 
@@ -231,17 +274,15 @@ def stage_2_job_matching():
     
     st.markdown("---")
     
-    # 2-2. 직무 추천 결과 표시
+    # 2-2. 직무 추천 결과 표시 및 상호작용 강화
     factors = st.session_state.car_data.get('factors', [])
-    recommended_jobs = calculate_job_scores(factors)
+    recommended_jobs_scored = calculate_job_scores(factors)
     
     st.markdown("### 🎯 나에게 맞는 직무 추천 결과")
     
-    if recommended_jobs:
-        # 추천 점수 1, 2, 3위 표시
-        top_jobs = [job for job, score in recommended_jobs if score > 0]
-        if top_jobs:
-            st.warning(f"1단계 드림카 분석 결과, **'{top_jobs[0]}'** 직무가 당신에게 가장 높은 추천 점수를 받았습니다! 👍")
+    if recommended_jobs_scored:
+        top_job_name = recommended_jobs_scored[0][0]
+        st.warning(f"1단계 드림카 분석 결과, **'{top_job_name}'** 직무가 당신에게 가장 높은 추천 점수를 받았습니다! 👍")
     
     st.markdown("---")
     
@@ -253,17 +294,15 @@ def stage_2_job_matching():
     for job_name in job_choices:
         job_info = JOB_ROLES[job_name]
         
-        # 추천 점수 표시 (가중치 계산 결과를 직관적으로)
-        score_text = ""
-        if factors:
-            score = JOB_WEIGHTS.get(job_name, {}).get(factors[0][0] if factors else 'Z', 0) # 첫번째 동인 기준으로 점수 표시 예시
-            score_map = {0: "⭐", 1: "⭐⭐", 2: "⭐⭐⭐", 3: "🏅추천!"}
-            score_text = f" (적합도: {score_map.get(score, '⭐')})"
+        # 추천 점수 표시 (상위 3개 직무에 '추천!' 마크 표시)
+        is_top_job = any(job_name == job[0] for job in recommended_jobs_scored[:3])
+        score_text = "🏅추천!" if is_top_job else "⭐"
 
         with st.expander(f"**{job_name}** {score_text}"):
-            st.image(job_info['image'], caption=f"{job_name} 현장 이미지", width=200) # 이미지 시각화
             st.markdown(f"**✅ 주요 역할:** {job_info['desc']}")
             st.markdown(f"**💡 필요 역량:** **{job_info['need']}** (3단계 로드맵의 기초!)")
+            st.caption(f"이미지 플레이스홀더: {job_info['image']}") # 이미지 플레이스홀더 텍스트 출력
+
             
     st.markdown("---")
 
@@ -284,7 +323,7 @@ def stage_2_job_matching():
         st.rerun()
 
 def stage_3_roadmap():
-    # ... (3단계 코드 유지) ...
+    """3단계: 3년 학습 로드맵 설계 및 시각화"""
     st.header("🗓️ 3단계: 나만의 3년 학습 로드맵 만들기")
     
     selected_job = st.session_state.selected_job
@@ -298,6 +337,7 @@ def stage_3_roadmap():
         # --- 1. 고교 3년 공통 로드맵 (시각화) ---
         st.markdown("### 1. 🥇 고등학교 3년 핵심 공통 목표 (기초 다지기)")
         
+        # DataFrame으로 로드맵 표 생성 (시각화 강조)
         df_common = pd.DataFrame({
             '학년': ['고1', '고2', '고3'],
             '학습 목표': [
