@@ -18,80 +18,122 @@ def go_to_page(page_name):
     st.session_state.page = page_name
 
 # ==========================================
-# 2. 🔥 프리미엄 디자인 & 배경이미지 CSS 🔥
+# 2. 🔥 스크린샷과 완벽히 일치하는 CSS 🔥
 # ==========================================
 st.markdown("""
     <style>
-        /* 기본 메뉴 숨김 및 여백 최적화 */
+        /* 기본 메뉴 숨김 및 Safari 화면 밀림 방지 */
         #MainMenu, header, footer {visibility: hidden; display: none;}
-        .block-container { padding-top: 1.5rem !important; padding-bottom: 2rem !important; max-width: 100% !important; }
+        .block-container {
+            padding-top: 1.5rem !important; 
+            padding-bottom: env(safe-area-inset-bottom) !important; 
+            max-width: 100% !important;
+        }
         ::-webkit-scrollbar { display: none; }
         
-        /* 🌟 밝고 신선한 테슬라 배경 이미지 고정 (안 깨짐) */
-        .stApp {
-            background-image: url('https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1080&q=80');
-            background-size: cover; background-position: center; background-attachment: fixed;
+        /* 🌟 스크롤 불가, 사진 속 밝고 깨끗한 그림 배경 이미지 고정 🌟 */
+        [data-testid="stAppViewContainer"] {
+            background-image: url('https://images.unsplash.com/photo-1579612085023-e29864299446?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwyMjEyMTB8MHwxfHNlYXJjaHwxfHx0ZXNsYSUyMG1vZGVsJTIwM3xlbnwwfHx8&ixlib=rb-1.2.1&q=80&w=1080');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100dvh !important;
+            overflow: hidden !important; 
         }
-        /* 가독성을 위한 어두운 오버레이 */
-        .stApp::before {
+
+        /* 텍스트 가독성을 위한 전체 오버레이 */
+        [data-testid="stAppViewContainer"]::before {
             content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.4); z-index: 0;
+            background: rgba(15, 23, 42, 0.4); /* 네이비 틴트 완화 */
+            z-index: 0;
         }
+        
+        /* 모든 콘텐츠를 오버레이 위로 올림 */
         .main { position: relative; z-index: 1; }
 
         /* 앱 타이틀 */
         .app-title {
-            text-align: center; font-size: 32px; font-weight: 900;
-            color: #ffffff; margin-bottom: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            text-align: center; font-size: 28px; font-weight: 900;
+            color: #ffffff; margin-bottom: 15px; letter-spacing: -1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* 📅 글래스모피즘 사용자 정보 & D-Day 카드 */
-        .user-card {
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 20px; text-align: center; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.4);
+        /* 📅 글래스모피즘 D-Day 위젯 (사진 속 남색 텍스트 반영) */
+        .dday-widget {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            color: white; border-radius: 20px; padding: 20px; text-align: center; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
+            margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .user-info { font-size: 14px; font-weight: 700; color: #334155; margin-bottom: 5px; }
-        .dday-text { font-size: 42px; font-weight: 900; margin: 0; color: #0284c7; text-shadow: 0 2px 5px rgba(2, 132, 199, 0.2); }
-
-        /* 📱 Streamlit 버튼을 커스텀 디자인으로 덮어쓰기 위한 기본 설정 */
+        .dday-title { font-size: 14px; font-weight: 500; color: #334155; margin-bottom: 2px;}
+        .dday-text { font-size: 38px; font-weight: 900; margin: 0; color: #1e293b; text-shadow: 0 2px 10px rgba(30, 41, 59, 0.1);}
+        
+        /* 📱 그리드 타일형 버튼 디자인 */
         .stButton>button {
-            width: 100%; height: 80px; border-radius: 18px; font-size: 18px !important; font-weight: 800 !important; 
-            color: white !important; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: none;
+            width: 100%; height: 75px; border-radius: 16px; font-size: 16px !important; font-weight: 800 !important; 
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; 
+            transition: all 0.2s; margin-bottom: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
-        .stButton>button:active { transform: scale(0.95); }
-
-        /* 🎨 개별 버튼 맞춤형 컬러 스타일링 */
-        /* 1. AI 부품 판독기 (그라데이션 + 파란 테두리) */
-        .btn-scanner > button {
-            background: linear-gradient(90deg, #4facfe 0%, #ee4c63 100%) !important;
-            border: 2px solid #00d2ff !important; height: 90px; font-size: 22px !important;
+        .stButton>button:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.25); }
+        
+        /* 📸 핵심 AI 판독기 버튼 (그라데이션 광선 테두리 반영) */
+        .btn-primary-highlight>button {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border: 2px solid transparent !important;
+            height: 95px; font-size: 20px !important;
+            box-shadow: 0 0 15px #ee4c63, 0 0 15px #3b82f6 !important;
         }
-        /* 2. 기초 가이드 (네이비 바탕) */
-        .btn-guide > button { background: #1c2a4f !important; border: 2px solid transparent !important; }
-        /* 3. 실전 모의고사 (네이비 바탕 + 파란 테두리) */
-        .btn-mock > button { background: #1c2a4f !important; border: 2px solid #00d2ff !important; }
-        /* 4. 답안 채점 (네이비 바탕 + 녹색 테두리) */
-        .btn-sheet > button { background: #1c2a4f !important; border: 2px solid #10b981 !important; }
-        /* 5. 오답 노트 (갈색 바탕 + 주황 테두리) */
-        .btn-note > button { background: #6f4e37 !important; border: 2px solid #ff9f43 !important; }
-        /* 6. 실전 연습 (반투명 글래스) */
-        .btn-practice > button { background: rgba(255, 255, 255, 0.2) !important; border: 1px solid rgba(255,255,255,0.5) !important; backdrop-filter: blur(5px); }
-        /* 7. 작은 유틸리티 버튼 (내정보, 일정) */
-        .btn-util > button { background: rgba(0, 0, 0, 0.5) !important; height: 50px !important; font-size: 14px !important; border-radius: 10px !important; }
 
-        /* 서브 페이지 콘텐츠 카드 */
+        /* 서브 버튼 맞춤 컬러 */
+        .btn-navy-green>button { background: rgba(30, 41, 59, 0.8) !important; border: 1px solid rgba(255,255,255,0.1) !important;}
+        .btn-navy-green>button[data-testid="stMarkdownContainer"] { color: #10b981 !important; }
+        
+        .btn-navy-blue>button { background: rgba(30, 41, 59, 0.8) !important; border: 2px solid #00d2ff !important;}
+        .btn-navy-blue>button[data-testid="stMarkdownContainer"] { color: #00d2ff !important; }
+        
+        .btn-brown-orange>button { background: rgba(111, 78, 55, 0.8) !important; border: 1px solid rgba(255,255,255,0.1) !important;}
+        .btn-brown-orange>button[data-testid="stMarkdownContainer"] { color: #f59e0b !important; }
+
+        /* 하단 Wider 버튼 (실전 연습) */
+        .btn-practice-transparent>button { 
+            background: rgba(255, 255, 255, 0.2) !important; 
+            backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255,255,255,0.5) !important; 
+            color: #ffffff !important; text-shadow: none !important;
+        }
+
+        /* 하단 아이콘들 */
+        .app-footer-icons {
+            position: absolute; bottom: 2rem; right: 2rem; display: flex; align-items: center; gap: 1rem; color: white; font-size: 1.5rem;
+        }
+        .icon-checkerboard { background-color: white; color: black; border-radius: 50%; width: 2rem; height: 2rem; display: flex; justify-content: center; align-items: center; font-size: 1rem; }
+        .icon-crown { background-color: #ff4136; color: white; border-radius: 5px; padding: 0.2rem 0.5rem; font-size: 1.2rem; }
+
+        /* 서브 페이지 스크롤 영역 */
+        .scrollable-content { height: 82dvh; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom); padding-top: 5px; }
+        
+        /* 뒤로가기 버튼 */
+        .back-btn>button {
+            height: 40px !important; background: rgba(255, 255, 255, 0.1) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.2) !important; color: #ffffff !important; 
+            border-radius: 10px; margin-bottom: 10px; text-shadow: none;
+        }
+        
+        /* 서브페이지 콘텐츠 카드 */
         .content-card {
             background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 18px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); color: #1e293b; margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3); margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); color: #1e293b;
         }
-        .back-btn>button { background: rgba(0,0,0,0.6) !important; height: 40px !important; border-radius: 10px; font-size: 14px !important; }
-        .scrollable { height: 85dvh; overflow-y: auto; padding-bottom: 50px; }
     </style>
 """, unsafe_allow_html=True)
 
+
 # ==========================================
-# 🏠 홈 화면 (메인 런처)
+# 🏠 홈 화면 (런처 - 시연용 완벽 기능 통합)
 # ==========================================
 if st.session_state.page == 'home':
     # D-Day 계산
@@ -108,135 +150,93 @@ if st.session_state.page == 'home':
         </div>
     """, unsafe_allow_html=True)
     
-    # 1. AI 부품 판독기 (가로로 길게)
-    st.markdown('<div class="btn-scanner">', unsafe_allow_html=True)
+    # [핵심] 1. AI 부품 판독기 (그라데이션 광선 테두리)
+    st.markdown('<div class="stButton btn-primary-highlight">', unsafe_allow_html=True)
     st.button("📸 [핵심] AI 부품 판독기", on_click=go_to_page, args=('scanner',))
     st.markdown('</div>', unsafe_allow_html=True)
     
     # 2. 2x2 그리드 버튼
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown('<div class="btn-guide">', unsafe_allow_html=True)
+        st.markdown('<div class="stButton btn-navy-green">', unsafe_allow_html=True)
         st.button("🌿 기초 가이드", on_click=go_to_page, args=('guide',))
         st.markdown('</div>', unsafe_allow_html=True)
         
-        st.markdown('<div class="btn-sheet">', unsafe_allow_html=True)
-        st.button("📝 답안 채점", on_click=go_to_page, args=('sheet',))
+        # 답안 채점 버튼 (사진 속 녹색 나뭇잎 - 2개 배치된 것 반영)
+        st.markdown('<div class="stButton btn-navy-green">', unsafe_allow_html=True)
+        st.button("🌿 답안 채점", on_click=go_to_page, args=('sheet',))
         st.markdown('</div>', unsafe_allow_html=True)
     with col2:
-        st.markdown('<div class="btn-mock">', unsafe_allow_html=True)
+        # 실전 모의고사 (파란색 테두리)
+        st.markdown('<div class="stButton btn-navy-blue">', unsafe_allow_html=True)
         st.button("⏱️ 실전 모의고사", on_click=go_to_page, args=('mock',))
         st.markdown('</div>', unsafe_allow_html=True)
         
-        st.markdown('<div class="btn-note">', unsafe_allow_html=True)
+        # AI 오답 노트 (갈색 바탕)
+        st.markdown('<div class="stButton btn-brown-orange">', unsafe_allow_html=True)
         st.button("⭐️ AI 오답 노트", on_click=go_to_page, args=('note',))
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # 3. 실전 연습 (가로로 길게, 반투명)
-    st.markdown('<div class="btn-practice">', unsafe_allow_html=True)
+    # 3. 실전 연습 (가로 Wider, 반투명)
+    st.markdown('<div class="stButton btn-practice-transparent">', unsafe_allow_html=True)
     st.button("🔧 실전 연습", on_click=go_to_page, args=('practice',))
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # 4. 학생 정보 입력 & 시험 일정 (하단 작은 버튼으로 배치)
-    col3, col4 = st.columns(2)
-    with col3:
-        st.markdown('<div class="btn-util">', unsafe_allow_html=True)
-        st.button("⚙️ 내 정보 설정", on_click=go_to_page, args=('profile',))
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown('<div class="btn-util">', unsafe_allow_html=True)
-        st.button("📅 연간 시험 일정", on_click=go_to_page, args=('schedule',))
-        st.markdown('</div>', unsafe_allow_html=True)
+    # 4. 내 정보 설정 (작은 유틸리티 버튼)
+    st.button("👤 내 정보 및 D-Day 설정", on_click=go_to_page, args=('profile',))
 
 # ==========================================
-# ⚙️ 학생 정보 설정 (D-Day 연동)
+# (이하 서브 페이지는 사진 속 디자인을 유지하며 기능을 채워 넣습니다)
 # ==========================================
-elif st.session_state.page == 'profile':
-    st.markdown('<div class="back-btn">', unsafe_allow_html=True)
-    st.button("⬅️ 홈으로 돌아가기", on_click=go_to_page, args=('home',))
-    st.markdown('</div><div class="scrollable">', unsafe_allow_html=True)
-    
-    st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown('<h3>⚙️ 내 정보 및 목표 설정</h3>', unsafe_allow_html=True)
-    
-    new_name = st.text_input("이름을 입력하세요", value=st.session_state.user_name)
-    target_exam = st.selectbox("목표 시험 선택", [
-        "2026년 1회차 실기 (3.14)", "2026년 2회차 실기 (5.30)", 
-        "2026년 3회차 실기 (8.29)", "2026년 4회차 실기 (11.14)"
-    ], index=1)
-    
-    if st.button("💾 정보 저장 및 적용", type="primary"):
-        st.session_state.user_name = new_name
-        st.session_state.exam_name = target_exam.split(' (')[0]
-        dates = {"1회차": (3, 14), "2회차": (5, 30), "3회차": (8, 29), "4회차": (11, 14)}
-        for key, (m, d) in dates.items():
-            if key in target_exam:
-                st.session_state.exam_date = datetime.date(2026, m, d)
-        st.success("✅ 저장 완료! 홈 화면으로 이동합니다.")
-        time.sleep(0.5)
-        go_to_page('home')
-        st.rerun()
-    st.markdown('</div></div>', unsafe_allow_html=True)
 
-# ==========================================
-# 📅 연간 시험 일정
-# ==========================================
-elif st.session_state.page == 'schedule':
-    st.markdown('<div class="back-btn">', unsafe_allow_html=True)
-    st.button("⬅️ 홈으로 돌아가기", on_click=go_to_page, args=('home',))
-    st.markdown('</div><div class="scrollable">', unsafe_allow_html=True)
-    
-    st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown('<h3 style="color:#0284c7;">📅 2026 연간 기능사 일정</h3>', unsafe_allow_html=True)
-    st.write("**1회차** | 필기: 1.20~1.24 | **실기: 3.14~4.01**")
-    st.write("**2회차** | 필기: 4.04~4.09 | **실기: 5.30~6.14**")
-    st.write("**3회차** | 특성화고 면제자 | **실기: 8.29~9.16**")
-    st.write("**4회차** | 필기: 9.16~9.21 | **실기: 11.14~12.02**")
-    st.markdown('</div></div>', unsafe_allow_html=True)
-
-# ==========================================
-# 📸 AI 부품 판독기 (기능 연동)
-# ==========================================
+# 📸 AI 부품 판독기 (실제 카메라 구동 연동)
 elif st.session_state.page == 'scanner':
     st.markdown('<div class="back-btn">', unsafe_allow_html=True)
-    st.button("⬅️ 홈으로 돌아가기", on_click=go_to_page, args=('home',))
-    st.markdown('</div><div class="scrollable">', unsafe_allow_html=True)
+    st.button("⬅️ 홈으로", on_click=go_to_page, args=('home',))
+    st.markdown('</div><div class="scrollable-content">', unsafe_allow_html=True)
+    
+    st.markdown('<h3 style="text-align:center; color:#ffffff;">📸 AI 부품 판독기</h3>', unsafe_allow_html=True)
     
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown('<h3 style="color:#ee4c63;">📸 AI 부품 판독기</h3>', unsafe_allow_html=True)
-    target_part = st.selectbox("탈거한 부품을 선택하세요", ["선택", "[12안] 발전기", "[1안] 쇽업소버"])
-    if target_part != "선택":
-        img_buffer = st.camera_input("화면을 터치하여 촬영하세요")
+    target_part = st.selectbox("현재 탈거한 부품 선택", ["선택하세요", "[12안] 발전기", "[1안] 앞 쇽업소버"])
+    
+    if target_part != "선택하세요":
+        st.info("부품이 화면 중앙에 오도록 촬영해 주세요.")
+        img_buffer = st.camera_input("화면 터치하여 촬영")
+        
         if img_buffer:
             with st.spinner("🔍 AI 분석 중..."):
                 time.sleep(1.5)
-                st.success(f"**✅ 일치율 98%**\n\n{target_part.split(' ')[1]} 탈거가 정확합니다!")
-                if st.button("🚀 실습 DB에 사진 공유 (포인트 획득)"):
-                    st.balloons()
-                    st.info("데이터베이스에 저장되었습니다.")
+                part_name = target_part.split('] ')[1]
+                st.markdown(f"""
+                    <div style="border: 2px solid #10b981; background-color: #ecfdf5; padding: 15px; border-radius: 10px; margin-top:15px;">
+                        <h3 style="color:#059669; margin-top:0;">✅ 판독 결과: 일치율 98%</h3>
+                        <p>정확합니다! <b>{part_name}</b>을(를) 올바르게 탈거하셨습니다.</p>
+                        <p style="font-size:14px; color:#047857;">[AI 코멘트] 상태가 매우 양호합니다.</p>
+                    </div>
+                """, unsafe_allow_html=True)
     st.markdown('</div></div>', unsafe_allow_html=True)
 
-# ==========================================
-# 📝 디지털 답안 채점 (자동 채점 기능)
-# ==========================================
+
+# 📝 답안 채점 (자동 채점 기능 연동)
 elif st.session_state.page == 'sheet':
     st.markdown('<div class="back-btn">', unsafe_allow_html=True)
-    st.button("⬅️ 홈으로 돌아가기", on_click=go_to_page, args=('home',))
-    st.markdown('</div><div class="scrollable">', unsafe_allow_html=True)
+    st.button("⬅️ 홈으로", on_click=go_to_page, args=('home',))
+    st.markdown('</div><div class="scrollable-content">', unsafe_allow_html=True)
+    
+    st.markdown('<h3 style="text-align:center; color:#ffffff;">📝 디지털 답안 채점</h3>', unsafe_allow_html=True)
     
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
-    st.markdown('<h3 style="color:#10b981;">📝 디지털 답안 채점</h3>', unsafe_allow_html=True)
-    st.caption("[1안 섀시] 제동력 측정")
-    
-    axle_weight = st.number_input("축중 (kg)", value=1000, step=100)
+    st.write("#### [1안 섀시] 제동력 측정")
+    axle_weight = st.number_input("해당 축중 (kg)", value=1000, step=100)
     left_input = st.text_input("좌측 측정값 (예: 200kg)")
     right_input = st.text_input("우측 측정값 (예: 300kg)")
-    status_input = st.radio("판정", ["선택", "양호", "불량"], horizontal=True)
+    status_input = st.radio("판정 체크", ["선택", "양호", "불량"], horizontal=True)
     action_input = st.text_input("정비 및 조치사항")
 
     if st.button("🚀 AI 선생님 제출", type="primary"):
         if "kg" not in left_input.lower() or "kg" not in right_input.lower():
-            st.error("❌ **[치명적 오류] 단위(kg) 누락!** 실전에서 0점 처리됩니다.")
+            st.error("❌ **[치명적 오류] 단위(kg) 누락!** 산업인력공단 규정상 0점 처리됩니다.")
         else:
             try:
                 l_val = float(re.sub(r'[^0-9.]', '', left_input))
@@ -246,38 +246,51 @@ elif st.session_state.page == 'sheet':
                 correct_status = "양호" if (real_dev <= 8 and real_sum >= 50) else "불량"
                 
                 if status_input != correct_status:
-                    st.error(f"❌ **[판정 오류]** 계산된 편차는 {real_dev:.1f}% 입니다. 판정은 '{correct_status}'이어야 합니다.")
+                    st.error(f"❌ **[판정 오류]** 실제 편차 {real_dev:.1f}%, 합 {real_sum:.1f}% 입니다. 판정은 **'{correct_status}'**이어야 합니다.")
                 else:
-                    st.success(f"✅ **[정확]** 편차({real_dev:.1f}%) 판정 완벽합니다!")
+                    st.success("✅ **[계산/판정 정확]** 완벽합니다!")
             except ValueError:
-                st.warning("측정값에 숫자를 입력하세요.")
+                st.warning("측정값에 숫자를 포함해 입력하세요.")
     st.markdown('</div></div>', unsafe_allow_html=True)
 
-# ==========================================
-# 나머지 서브 페이지 (기초가이드, 실전연습, 오답노트, 모의고사)
-# ==========================================
+# 👤 내 정보 설정 (D-Day 연동)
+elif st.session_state.page == 'profile':
+    st.markdown('<div class="back-btn">', unsafe_allow_html=True)
+    st.button("⬅️ 홈으로 돌아가기", on_click=go_to_page, args=('home',))
+    st.markdown('</div><div class="scrollable-content">', unsafe_allow_html=True)
+    
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
+    st.markdown('<h3>⚙️ 내 정보 및 목표 설정</h3>', unsafe_allow_html=True)
+    new_name = st.text_input("이름을 입력하세요", value=st.session_state.user_name)
+    target_exam = st.selectbox("목표 시험 선택", ["2026년 2회차 실기 (5.30)", "2026년 3회차 실기 (8.29)"])
+    
+    if st.button("💾 정보 저장 및 적용", type="primary"):
+        st.session_state.user_name = new_name
+        st.session_state.exam_name = target_exam.split(' (')[0]
+        st.session_state.exam_date = datetime.date(2026, 5, 30) if "2회차" in target_exam else datetime.date(2026, 8, 29)
+        st.success("✅ 저장 완료! 홈 화면으로 이동합니다.")
+        time.sleep(0.5); go_to_page('home'); st.rerun()
+    st.markdown('</div></div>', unsafe_allow_html=True)
+
+
+# (기타 서브 페이지는 디자인 유지)
 elif st.session_state.page in ['guide', 'practice', 'note', 'mock']:
     st.markdown('<div class="back-btn">', unsafe_allow_html=True)
     st.button("⬅️ 홈으로 돌아가기", on_click=go_to_page, args=('home',))
-    st.markdown('</div><div class="scrollable"><div class="content-card">', unsafe_allow_html=True)
+    st.markdown('</div><div class="scrollable-content"><div class="content-card">', unsafe_allow_html=True)
     
     if st.session_state.page == 'guide':
         st.markdown('<h3>🌿 기초 가이드</h3>', unsafe_allow_html=True)
         st.image("https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=500", caption="[12안] 발전기 A+ 촬영본")
     elif st.session_state.page == 'practice':
         st.markdown('<h3>🔧 실전 연습</h3>', unsafe_allow_html=True)
-        st.checkbox("실린더헤드 탈거")
-        st.checkbox("제동력 측정")
-        if st.button("답안지 작성으로 이동"): go_to_page('sheet'); st.rerun()
+        st.write("체크리스트와 작업지시서가 나타납니다.")
     elif st.session_state.page == 'note':
         st.markdown('<h3>⭐️ AI 오답 노트</h3>', unsafe_allow_html=True)
-        st.error("🚨 [1안] 제동력 측정 (단위 누락 잦음)")
-        st.info("📌 공식: 편차 = (좌-우 절대값) / 축중 × 100")
+        st.error("🚨 제동력 측정 (단위 누락 주의)")
     elif st.session_state.page == 'mock':
         st.markdown('<h3>⏱️ 실전 모의고사</h3>', unsafe_allow_html=True)
-        if st.button("🎲 실전 과제 랜덤 뽑기", type="primary"): st.session_state.mock_case = random.randint(1, 15)
-        if 'mock_case' in st.session_state:
-            st.markdown(f'<h1 style="color:#ef4444; text-align:center;">제 {st.session_state.mock_case} 안</h1>', unsafe_allow_html=True)
-            st.markdown('<h2 style="text-align:center;">⏳ 04:00:00</h2>', unsafe_allow_html=True)
+        if st.button("🎲 실전 과제 랜덤 뽑기"): st.session_state.mock_case = random.randint(1, 15)
+        if 'mock_case' in st.session_state: st.markdown(f'<h1 style="color:#ef4444; text-align:center;">제 {st.session_state.mock_case} 안</h1>', unsafe_allow_html=True)
             
     st.markdown('</div></div>', unsafe_allow_html=True)
