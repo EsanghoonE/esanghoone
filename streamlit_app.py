@@ -18,50 +18,89 @@ def go_to_page(page_name):
     st.session_state.page = page_name
 
 # ==========================================
-# 2. 강력한 모바일 네이티브 CSS
+# 2. 🔥 프리미엄 글래스모피즘 & Safari 최적화 CSS 🔥
 # ==========================================
 st.markdown("""
     <style>
+        /* 기본 메뉴 숨김 및 Safari 화면 밀림 방지 */
         #MainMenu, header, footer {visibility: hidden; display: none;}
-        .block-container {padding-top: 1rem !important; padding-bottom: 0px !important; max-width: 100% !important;}
+        .block-container {
+            padding-top: 1rem !important; 
+            padding-bottom: env(safe-area-inset-bottom) !important; 
+            max-width: 100% !important;
+        }
         ::-webkit-scrollbar { display: none; }
         
-        html, body, [data-testid="stAppViewContainer"] { background-color: #f8fafc; overflow: hidden !important; }
-
-        /* D-Day 위젯 */
-        .dday-widget {
-            background: linear-gradient(135deg, #0f172a, #1e293b); color: white; border-radius: 18px; padding: 15px;
-            text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px; border: 1px solid #334155;
+        /* 럭셔리 배경 이미지 설정 (어두운 자동차 테마) */
+        [data-testid="stAppViewContainer"] {
+            background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100dvh !important; /* Safari 동적 뷰포트 대응 */
+            overflow: hidden !important; 
         }
-        .dday-title { font-size: 14px; font-weight: 500; color: #94a3b8; margin-bottom: 2px;}
-        .dday-text { font-size: 32px; font-weight: 900; margin: 0; color: #38bdf8;}
+
+        /* 텍스트 가독성을 위한 전체 오버레이 */
+        [data-testid="stAppViewContainer"]::before {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.7); /* 고급스러운 네이비 틴트 */
+            z-index: 0;
+        }
         
-        /* 메인 버튼 공통 디자인 */
+        /* 모든 콘텐츠를 오버레이 위로 올림 */
+        .main { position: relative; z-index: 1; }
+
+        /* 앱 타이틀 */
+        .app-title {
+            text-align: center; font-size: 28px; font-weight: 900;
+            color: #ffffff; margin-bottom: 15px; letter-spacing: -1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* 📅 글래스모피즘 D-Day 위젯 */
+        .dday-widget {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            color: white; border-radius: 20px; padding: 20px; text-align: center; 
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); 
+            margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dday-title { font-size: 14px; font-weight: 500; color: #cbd5e1; margin-bottom: 2px;}
+        .dday-text { font-size: 38px; font-weight: 900; margin: 0; color: #38bdf8; text-shadow: 0 2px 10px rgba(56, 189, 248, 0.4);}
+        
+        /* 📱 그리드 타일형 버튼 (반투명 유리 효과) */
         .stButton>button {
             width: 100%; height: 75px; border-radius: 16px; font-size: 16px !important; font-weight: 800 !important; 
-            background-color: #ffffff; border: 1px solid #e2e8f0; color: #334155; transition: all 0.1s; margin-bottom: 5px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
-        .stButton>button:active { transform: scale(0.95); background-color: #f1f5f9; }
+        .stButton>button:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.25); }
         
-        /* 핵심 AI 판독기 버튼 */
+        /* 핵심 AI 판독기 버튼 (그라데이션 강조) */
         .main-btn>button {
-            background: linear-gradient(135deg, #2563eb, #3b82f6); color: white !important; border: none; height: 90px; font-size: 20px !important;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(59, 130, 246, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.3); height: 95px; font-size: 20px !important;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
         }
 
-        /* 서브 페이지 스크롤 허용 (모바일 앱 본문 느낌) */
-        .scrollable-content { height: 85vh; overflow-y: auto; padding-bottom: 40px; padding-top: 5px;}
+        /* 서브 페이지 스크롤 영역 */
+        .scrollable-content { height: 82dvh; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom); padding-top: 5px; }
         
         /* 뒤로가기 버튼 */
         .back-btn>button {
-            height: 40px !important; background-color: transparent !important; border: 1px solid #cbd5e1 !important;
-            box-shadow: none !important; color: #475569 !important; border-radius: 10px; margin-bottom: 10px;
+            height: 40px !important; background: rgba(255, 255, 255, 0.1) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.2) !important; color: #ffffff !important; 
+            border-radius: 10px; margin-bottom: 10px; text-shadow: none;
         }
         
-        /* 콘텐츠 카드 */
+        /* 서브페이지 콘텐츠 카드 */
         .content-card {
-            background-color: white; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 18px; 
+            border: 1px solid rgba(255, 255, 255, 0.3); margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); color: #1e293b;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -74,6 +113,8 @@ if st.session_state.page == 'home':
     today = datetime.date(2026, 3, 18)
     d_day = (st.session_state.exam_date - today).days
     d_day_str = f"D - {d_day}" if d_day >= 0 else f"D + {abs(d_day)}"
+    
+    st.markdown('<div class="app-title">🚗 Auto-Master</div>', unsafe_allow_html=True)
     
     st.markdown(f"""
         <div class="dday-widget">
@@ -88,15 +129,15 @@ if st.session_state.page == 'home':
     
     col1, col2 = st.columns(2)
     with col1:
-        st.button("🌱 [초보]\n기초 가이드", on_click=go_to_page, args=('guide',))
-        st.button("⏱️ [고수]\n모의고사", on_click=go_to_page, args=('mock',))
-        st.button("⭐️ 오답 노트", on_click=go_to_page, args=('note',))
+        st.button("🌱 기초 가이드", on_click=go_to_page, args=('guide',))
+        st.button("⏱️ 실전 모의고사", on_click=go_to_page, args=('mock',))
+        st.button("⭐️ AI 오답 노트", on_click=go_to_page, args=('note',))
     with col2:
-        st.button("🔧 [중수]\n실전 연습", on_click=go_to_page, args=('practice',))
-        st.button("📝 [필수]\n답안 채점", on_click=go_to_page, args=('sheet',))
+        st.button("🔧 실전 연습", on_click=go_to_page, args=('practice',))
+        st.button("📝 답안 채점", on_click=go_to_page, args=('sheet',))
         st.button("📅 연간 일정", on_click=go_to_page, args=('schedule',))
         
-    st.button("👤 내 정보 및 D-Day 설정", on_click=go_to_page, args=('profile',))
+    st.button("👤 내 정보 및 목표 설정", on_click=go_to_page, args=('profile',))
 
 
 # ==========================================
@@ -108,7 +149,7 @@ elif st.session_state.page == 'profile':
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="scrollable-content">', unsafe_allow_html=True)
-    st.markdown('<h3 style="text-align:center; color:#334155;">👤 내 정보 설정</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="text-align:center; color:#ffffff;">👤 내 정보 설정</h3>', unsafe_allow_html=True)
     
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
     new_name = st.text_input("이름", value=st.session_state.user_name)
@@ -140,8 +181,9 @@ elif st.session_state.page == 'scanner':
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="scrollable-content">', unsafe_allow_html=True)
-    st.markdown('<h3 style="text-align:center; color:#1e3a8a;">📸 AI 부품 판독기</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="text-align:center; color:#ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">📸 AI 부품 판독기</h3>', unsafe_allow_html=True)
     
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     target_part = st.selectbox("현재 탈거한 부품 선택", ["선택하세요", "[12안] 발전기", "[1안] 앞 쇽업소버", "[13안] 인젝터"])
     
     if target_part != "선택하세요":
@@ -150,20 +192,21 @@ elif st.session_state.page == 'scanner':
         
         if img_buffer:
             with st.spinner("🔍 AI 모델이 부품 형상을 분석 중입니다..."):
-                time.sleep(1.5) # AI 분석 시뮬레이션 대기
+                time.sleep(1.5)
                 part_name = target_part.split('] ')[1]
                 st.markdown(f"""
-                    <div class="content-card" style="border: 2px solid #10b981; background-color: #ecfdf5;">
+                    <div style="border: 2px solid #10b981; background-color: #ecfdf5; padding: 15px; border-radius: 10px; margin-top:15px;">
                         <h3 style="color:#059669; margin-top:0;">✅ 판독 결과: 일치율 98%</h3>
                         <p>정확합니다! <b>{part_name}</b>을(를) 올바르게 탈거하셨습니다.</p>
                         <p style="font-size:14px; color:#047857;">[AI 코멘트] 체결부위 마모 없이 상태가 매우 양호합니다.</p>
                     </div>
                 """, unsafe_allow_html=True)
                 
+                st.write("")
                 if st.button("🚀 실습 DB에 내 사진 공유하기 (후배들을 위해)"):
                     st.balloons()
                     st.success("🎉 데이터베이스에 저장되었습니다! 포인트 +10 획득!")
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 
 # ==========================================
@@ -175,16 +218,13 @@ elif st.session_state.page == 'guide':
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="scrollable-content">', unsafe_allow_html=True)
-    st.markdown('<h3 style="text-align:center; color:#10b981;">🌱 기초 가이드</h3>', unsafe_allow_html=True)
-    st.write("선배들이 남긴 A+ 실전 부품 갤러리입니다.")
+    st.markdown('<h3 style="text-align:center; color:#ffffff;">🌱 기초 가이드</h3>', unsafe_allow_html=True)
     
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.write("#### 🔧 [12안] 발전기 (Alternator)")
-    # 실제 발전기와 유사한 무료 이미지 플레이스홀더 사용
     st.image("https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80", caption="김** 선배 촬영본")
     st.info("💡 탈거 전 반드시 배터리 (-) 단자를 분리하세요!")
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 
 # ==========================================
@@ -196,12 +236,12 @@ elif st.session_state.page == 'practice':
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="scrollable-content">', unsafe_allow_html=True)
-    st.markdown('<h3 style="text-align:center; color:#3b82f6;">🔧 실전 연습</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="text-align:center; color:#ffffff;">🔧 실전 연습</h3>', unsafe_allow_html=True)
     
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     case_num = st.selectbox("실습 안 선택", ["선택하세요", "제 1안 세트", "제 12안 세트"])
     
     if case_num == "제 1안 세트":
-        st.markdown('<div class="content-card">', unsafe_allow_html=True)
         st.write("#### 📋 1안 작업 지시서")
         st.checkbox("[기관] 실린더헤드와 분사노즐(1개) 탈거")
         st.checkbox("[기관] 점화회로 고장 점검 및 시동")
@@ -213,8 +253,7 @@ elif st.session_state.page == 'practice':
         if st.button("👉 제동력 측정 답안지 작성하기", type="primary"):
             go_to_page('sheet')
             st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 
 # ==========================================
@@ -226,7 +265,7 @@ elif st.session_state.page == 'sheet':
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="scrollable-content">', unsafe_allow_html=True)
-    st.markdown('<h3 style="text-align:center; color:#6366f1;">📝 디지털 답안 채점</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="text-align:center; color:#ffffff;">📝 디지털 답안 채점</h3>', unsafe_allow_html=True)
     
     st.markdown('<div class="content-card">', unsafe_allow_html=True)
     st.write("#### [1안 섀시] 제동력 측정")
@@ -272,7 +311,7 @@ elif st.session_state.page == 'note':
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="scrollable-content">', unsafe_allow_html=True)
-    st.markdown('<h3 style="text-align:center; color:#f59e0b;">⭐️ AI 오답 노트</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="text-align:center; color:#ffffff;">⭐️ AI 오답 노트</h3>', unsafe_allow_html=True)
     
     st.markdown("""
         <div class="content-card" style="border-left: 5px solid #ef4444;">
@@ -297,14 +336,15 @@ elif st.session_state.page == 'mock':
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="scrollable-content">', unsafe_allow_html=True)
-    st.markdown('<h3 style="text-align:center; color:#ef4444;">⏱️ 파이널 모의고사</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="text-align:center; color:#ffffff;">⏱️ 파이널 모의고사</h3>', unsafe_allow_html=True)
     
+    st.markdown('<div class="content-card">', unsafe_allow_html=True)
     if st.button("🎲 실전 과제 랜덤 뽑기", type="primary"):
         st.session_state.mock_case = random.randint(1, 15)
         
     if 'mock_case' in st.session_state:
         st.markdown(f"""
-            <div class="content-card" style="text-align:center; border: 3px solid #ef4444;">
+            <div style="text-align:center; border: 3px solid #ef4444; padding:20px; border-radius:15px; margin-top:20px;">
                 <h1 style="color:#ef4444; font-size:45px; margin:0;">제 {st.session_state.mock_case} 안</h1>
                 <p style="color:#475569; font-weight:bold;">배정되었습니다. 실습 차량으로 이동하세요.</p>
                 <hr>
@@ -312,7 +352,7 @@ elif st.session_state.page == 'mock':
                 <p style="color:#94a3b8; font-size:13px;">기관 100분 / 섀시 80분 / 전기 60분</p>
             </div>
         """, unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 
 # ==========================================
@@ -324,7 +364,7 @@ elif st.session_state.page == 'schedule':
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="scrollable-content">', unsafe_allow_html=True)
-    st.markdown('<h3 style="text-align:center; color:#10b981;">📅 2026 연간 시험 일정</h3>', unsafe_allow_html=True)
+    st.markdown('<h3 style="text-align:center; color:#ffffff;">📅 2026 연간 시험 일정</h3>', unsafe_allow_html=True)
     
     st.markdown("""
         <div class="content-card">
