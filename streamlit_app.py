@@ -1,7 +1,5 @@
 import streamlit as st
-import base64
 from datetime import datetime
-import os
 
 # ------------------ 1. 페이지 설정 ------------------
 st.set_page_config(
@@ -11,26 +9,15 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ------------------ 2. 배경 이미지 ------------------
-bg_image_path = "졸업과제 어플 배경 테슬라.jpg"
+# ------------------ 2. CSS (배경 URL 적용) ------------------
+# Imgur 링크의 '직접 이미지 주소(.jpg)'를 사용합니다.
+bg_url = "https://i.imgur.com/evCoCnM.jpg"
 
-def get_base64(file_path):
-    if os.path.exists(file_path):
-        with open(file_path, "rb") as f:
-            return base64.b64encode(f.read()).decode()
-    else:
-        st.error(f"⚠️ 이미지를 찾을 수 없습니다: {file_path}")
-        return ""
-
-bg = get_base64(bg_image_path)
-
-# ------------------ 3. CSS ------------------
-# f-string 안에서 CSS를 쓸 때는 중괄호를 {{ }} 처럼 두 번 써야 합니다.
 st.markdown(f"""
 <style>
 /* 배경 이미지 화면 전체 적용 */
 [data-testid="stAppViewContainer"] {{
-    background-image: url("data:image/jpeg;base64,{bg}");
+    background-image: url("{bg_url}");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -56,7 +43,7 @@ st.markdown(f"""
     color: white;
     text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
     margin-bottom: 10px;
-}} /* <- 이 부분의 닫는 중괄호 누락 오류를 수정했습니다! */
+}}
 
 /* 사용자 정보 카드 (유리 질감) */
 .card {{
@@ -109,19 +96,19 @@ h1, p, div[data-testid="stMarkdownContainer"] > p {{
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------ 4. 상태 관리 ------------------
+# ------------------ 3. 상태 관리 ------------------
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
 def move(page):
     st.session_state.page = page
 
-# ------------------ 5. D-DAY 계산 ------------------
+# ------------------ 4. D-DAY 계산 ------------------
 target = datetime(2026, 5, 30)  # 시험 날짜 설정
 today = datetime.now()
 d_day = (target - today).days
 
-# ------------------ 6. 페이지 라우팅 ------------------
+# ------------------ 5. 페이지 라우팅 ------------------
 
 # 메인 홈 화면
 if st.session_state.page == "home":
