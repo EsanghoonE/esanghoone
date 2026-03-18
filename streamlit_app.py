@@ -25,6 +25,7 @@ def get_base64(file_path):
 bg = get_base64(bg_image_path)
 
 # ------------------ 3. CSS ------------------
+# f-string 안에서 CSS를 쓸 때는 중괄호를 {{ }} 처럼 두 번 써야 합니다.
 st.markdown(f"""
 <style>
 /* 배경 이미지 화면 전체 적용 */
@@ -55,7 +56,7 @@ st.markdown(f"""
     color: white;
     text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
     margin-bottom: 10px;
-}
+}} /* <- 이 부분의 닫는 중괄호 누락 오류를 수정했습니다! */
 
 /* 사용자 정보 카드 (유리 질감) */
 .card {{
