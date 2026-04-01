@@ -9,7 +9,7 @@ from PIL import Image
 # 🔑 구글 AI API 설정 (상훈쌤의 API 키 적용 완료!)
 # ==========================================
 # 주의: 깃허브 등 공개 저장소에 코드를 올릴 때는 이 키를 반드시 숨기세요!
-genai.configure(api_key="AIzaSyAxbvbjFk2-LU24rh6z-iS_Q66M7-BMUWI") 
+genai.configure(api_key="AIzaSyA73m7z-0BWTVxU-vs6uK5-7rHNooZIU5c") 
 # Vision(이미지 인식) 기능과 속도가 뛰어난 최신 gemini-1.5-flash 모델 사용
 model = genai.GenerativeModel('gemini-1.5-flash')
 
