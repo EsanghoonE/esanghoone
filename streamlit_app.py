@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 import os
 import google.generativeai as genai
+from PIL import Image
 
 # ---------------- API 키 설정 (st.secrets 활용) ----------------
 # Streamlit의 보안 저장소에서 키를 불러옵니다. .env 파일이 필요 없습니다!
@@ -130,9 +131,13 @@ elif st.session_state.page == "ai":
             time.sleep(1)
 
             try:
+                # ⭐ 핵심: 촬영된 이미지를 AI가 읽을 수 있는 형태로 변환!
+                pil_img = Image.open(img)
+
+                # 변환된 이미지(pil_img)를 프롬프트와 함께 전송
                 response = model.generate_content([
                     "이 자동차 부품이 무엇인지 설명하고 상태를 분석해줘. (부품명 / 상태 / 이유 형식으로)",
-                    img.getvalue()
+                    pil_img
                 ])
                 result = response.text
 
