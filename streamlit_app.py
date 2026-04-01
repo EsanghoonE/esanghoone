@@ -2,6 +2,16 @@ import streamlit as st
 from datetime import datetime
 import time
 import os
+from dotenv import load_dotenv
+import google.generativeai as genai
+
+# ---------------- .env 로드 ----------------
+load_dotenv()
+api_key = os.getenv("GOOGLE_API_KEY")
+
+# ---------------- Gemini 설정 ----------------
+genai.configure(api_key=api_key)
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 # ---------------- 상태 초기화 ----------------
 if "page" not in st.session_state:
@@ -31,7 +41,6 @@ bg_url = "https://i.imgur.com/evCoCnM.jpg"
 st.markdown(f"""
 <style>
 
-/* 배경 */
 [data-testid="stAppViewContainer"] {{
     background-image: url("{bg_url}");
     background-size: cover;
@@ -39,86 +48,29 @@ st.markdown(f"""
     background-attachment: fixed;
 }}
 
-[data-testid="stHeader"] {{
-    background: transparent;
-}}
-
 .main .block-container {{
     max-width: 420px;
     margin: auto;
 }}
 
-/* 타이틀 */
 .title {{
     text-align: center;
     font-size: 2.4rem;
     font-weight: 900;
     color: white;
-    text-shadow: 0 0 15px rgba(0,0,0,0.8);
 }}
 
-/* 카드 */
 .card {{
     background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(12px);
     padding: 20px;
     border-radius: 20px;
-    margin-bottom: 20px;
     color: white;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
 }}
 
-/* 기본 버튼 */
 div.stButton > button {{
     width: 100%;
     height: 70px;
     border-radius: 18px;
-    background: rgba(20,40,80,0.7);
-    color: white;
-    font-weight: bold;
-    border: 1px solid rgba(255,255,255,0.3);
-    transition: 0.3s;
-}}
-
-div.stButton > button:hover {{
-    transform: scale(1.05);
-}}
-
-/* ===============================
-   🌈 AI 버튼 (네온 끝판왕)
-   =============================== */
-div.stButton:nth-of-type(1) > button {{
-
-    position: relative;
-    overflow: hidden;
-
-    background: linear-gradient(135deg, #ff007f, #ffd700, #00c6ff, #00e676, #ff007f);
-    background-size: 400% 400%;
-
-    font-size: 19px;
-    font-weight: 900;
-
-    animation: rainbow 6s infinite;
-
-    box-shadow:
-        0 0 10px rgba(255,255,255,0.6),
-        0 0 30px rgba(0,198,255,0.7),
-        0 0 60px rgba(255,0,127,0.6);
-
-}}
-
-div.stButton:nth-of-type(1) > button:hover {{
-    transform: scale(1.1);
-    box-shadow:
-        0 0 20px white,
-        0 0 50px #00c6ff,
-        0 0 100px #ff007f;
-}}
-
-@keyframes rainbow {{
-    0% {{background-position: 0%}}
-    50% {{background-position: 100%}}
-    100% {{background-position: 0%}}
 }}
 
 h1,h2,h3,p {{
@@ -173,15 +125,20 @@ elif st.session_state.page == "ai":
         st.image(img)
 
         with st.spinner("AI 분석중..."):
-            time.sleep(2)
+            time.sleep(1)
+
+            try:
+                response = model.generate_content([
+                    "이 자동차 부품이 무엇인지 설명하고 상태를 분석해줘. (부품명 / 상태 / 이유 형식으로)",
+                    img.getvalue()
+                ])
+                result = response.text
+
+            except Exception as e:
+                result = f"에러 발생: {e}"
 
         st.success("판독 완료!")
-
-        st.write("""
-        🔧 부품: 점화 플러그  
-        💡 상태: 양호  
-        📊 신뢰도: 95%
-        """)
+        st.write(result)
 
         st.session_state.xp += 10
 
