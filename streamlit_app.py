@@ -2,14 +2,16 @@ import streamlit as st
 from datetime import datetime
 import time
 import os
-from dotenv import load_dotenv
 import google.generativeai as genai
 
-# ---------------- .env 로드 ----------------
-load_dotenv()
-api_key = os.getenv("GOOGLE_API_KEY")
+# ---------------- API 키 설정 (st.secrets 활용) ----------------
+# Streamlit의 보안 저장소에서 키를 불러옵니다. .env 파일이 필요 없습니다!
+try:
+    api_key = st.secrets["GOOGLE_API_KEY"]
+except KeyError:
+    # 혹시 Secret 설정이 안 되어 에러가 날 경우를 대비한 임시 하드코딩 (테스트 후 지우셔도 됩니다)
+    api_key = "AIzaSyAxbvbjFk2-LU24rh6z-iS_Q66M7-BMUWI"
 
-# ---------------- Gemini 설정 ----------------
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
